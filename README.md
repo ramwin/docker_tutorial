@@ -24,6 +24,18 @@ sudo docker run hello-world
 sudo apt install docker-ce
 ```
 
+
+# Images
+* pull
+```
+docker pull --platform linux/arm64 ubuntu:20.04
+```
+
+* save
+```
+docker image save <image> -o <local_path>
+```
+
 # Container
 
 ## 基础
