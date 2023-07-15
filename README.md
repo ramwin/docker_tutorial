@@ -54,3 +54,10 @@ docker run
 docker attach containername  # 访问某个容器
 ctrl + P + Q  # 退出容器，不停止进程
 ```
+
+* 暴露端口
+
+把宿主机的19000端口绑定到容器的8000端口. 可以绑定多个
+```
+docker run -p 19000:8000 -p 19001:8001 <image>
+```
