@@ -61,3 +61,21 @@ ctrl + P + Q  # 退出容器，不停止进程
 ```
 docker run -p 19000:8000 -p 19001:8001 <image>
 ```
+
+# [Volume](https://docs.docker.com/storage/volumes/)
+* 操作卷
+```
+docker volume create my-vol
+docker volume rm my-vol
+docker volume inspect my-vol
+```
+
+* 挂载卷
+```
+docker run -ti --rm --mount source=my-vol,target=/app  ubuntu /bin/sh
+```
+
+* 直接挂载本地文件夹
+```
+docker run -ti --rm -v /tmp:/tmp ubuntu /bin/sh
+```
