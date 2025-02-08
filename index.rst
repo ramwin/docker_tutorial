@@ -12,6 +12,7 @@ Welcome to linux reference's documentation!
 
    ./README.md
    ./常用镜像.md
+   ./DockerFile.md
 
 
 Indices and tables
