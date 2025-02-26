@@ -1,4 +1,8 @@
 # 网络
+## 默认情况，iptables为True
+* bridge: 哪怕防火墙没开，外部也能访问暴露的端口
+* host: 直接用本机端口，所以无法启动redis容器，和本机的6379端口冲突
+* none: 没网络，内外都无法访问
 
 # 自定义registry
 `./start_registry.sh`
