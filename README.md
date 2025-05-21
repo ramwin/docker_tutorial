@@ -1,31 +1,44 @@
-# 网络
-## 默认情况，iptables为True
+# Docker
+
+## 配置
+```json
+// /etc/docker/daemon.json
+{
+  "ip-tables": false,  // 下次部署手动确认一次
+  "log-opts": {
+    "max-size": "100m"  // 不然你的docker跑久了会把服务器磁盘占满
+  }
+}
+```
+
+## 网络
+### 默认情况，iptables为True
 无论是host还是bridge,都可以访问外部网络
 * bridge: 需要端口映射， 哪怕防火墙没开，外部也能访问暴露的端口
 * host: 直接用本机端口，所以无法启动redis容器，和本机的6379端口冲突
 * none: 没网络，内外都无法访问
 
-## 关闭iptables后
+### 关闭iptables后
 host可以访问外部网络，bridge不行
 * host: 直接使用本机端口, ufw可以防住，但是端口无法自定义映射, 可以访问外部网络
 * bridge: 需要使用端口映射，才能访问。ufw可以防住, 无法访问外部网络
 
-## 解决方案
+### 解决方案
 使用ufw-docker
 
-# 自定义registry
+## 自定义registry
 `./start_registry.sh`
 ```{literalinclude} ./start_registry.sh
 ```
 
-# 安装
+## 安装
 
 ```
 curl -fsSL https://get.docker.com/ | sh
 sudo usermod -aG docker $USER
 ```
 
-## ubuntu
+### ubuntu
 ```
 sudo apt-get -y install \
   apt-transport-https \
@@ -45,7 +58,7 @@ sudo apt install docker-ce
 ```
 
 
-# Images
+## Images
 * pull
 ```
 docker pull --platform linux/arm64 ubuntu:20.04
@@ -56,14 +69,14 @@ docker pull --platform linux/arm64 ubuntu:20.04
 docker image save <image> -o <local_path>
 ```
 
-# Container
+## Container
 
-## 基础
+### 基础
 
 ```
 docker run hello-world
 docker run --name containername -i -t ubuntu:14.04 /bin/bash
-# 本地跑了redis-server，想从container里面访问数据库
+## 本地跑了redis-server，想从container里面访问数据库
 docker run 
     -ti  # 选择命令行交互模式
     --rm  # 命令结束后删除docker container
@@ -82,7 +95,7 @@ ctrl + P + Q  # 退出容器，不停止进程
 docker run -p 19000:8000 -p 19001:8001 <image>
 ```
 
-# [Volume](https://docs.docker.com/storage/volumes/)
+## [Volume](https://docs.docker.com/storage/volumes/)
 * 操作卷
 ```
 docker volume create my-vol
