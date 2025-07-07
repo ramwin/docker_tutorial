@@ -11,6 +11,18 @@
 }
 ```
 
+## 运行
+```bash
+sudo docker run \
+    --restart always \
+    -p 81:80 \
+    --name containername \
+    -d \
+    --log-opt max-size=10m \
+    --log-opt max-file=5 \
+    httpd
+```
+
 ## 网络
 ### 默认情况，iptables为True
 无论是host还是bridge,都可以访问外部网络
