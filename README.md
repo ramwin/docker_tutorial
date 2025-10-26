@@ -38,6 +38,59 @@ host可以访问外部网络，bridge不行
 ### 解决方案
 使用ufw-docker
 
+1. 容器运行
+```
+docker run -p 81:80 --name httpd_81 -d httpd
+# docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -q) 查看容器ip为172.17.0.6
+DOCKER_IP=172.17.0.6
+curl localhost:81  // 内网可以访问
+docker run --name tmp --rm alpine/curl http://ramwin.com/  # docker内可以访问外网
+docker run --name tmp --rm alpine/curl http://172.17.0.6:80/  # docker内可以用docker的IP访问
+其他服务器 curl http://ip:81  # 外部其他服务器无法访问
+```
+
+2. ufwdocker全部放开
+```
+sudo ufw-docker allow httpd_81  # 允许外部访问
+其他服务器 curl http://<宿主机ip>:81/  # 外部其他服务器可以访问
+```
+
+3. 容器销毁后重启
+```
+docker stop httpd_81 && docker start httpd_81
+docker run -p 83:80 --name httpd_82 -d httpd
+此时的IP还是 172.17.0.6, 所以外网还是能访问 <宿主机ip>:83
+
+docker run -p 81:80 --name httpd_81 -d httpd
+此时httpd_81的ip变成了172.17.0.7所以外网无法访问了 
+```
+
+4. 结论, 启动容器时要指定ip
+```
+docker run -p 81:80 --name httpd_81 -d httpd --ip="172.17.0.6"
+docker run -p 81:80 --name httpd_81 -d --ip 172.17.0.6 httpd  # 报错,因为default的网络不支持自定义IP. 所以要创建一个网络
+```
+
+5. 创建网络
+```
+docker network create httpd_network  # 创建一个网络, 比如网关172.19.0.1, 没指定subnet后面会报错
+docker network create httpd_network --subnet=172.19.0.0/16  # 创建一个网络, 比如网关172.19.0.1, 没指定subnet后面会报错
+docker run -p 81:80 --name httpd_81 -d --ip 172.19.0.6 --network httpd_network httpd
+sudo ufw-docker allow httpd_81  # ufw-docker是改防火墙,所以要sudo, docker用户不行哦
+```
+
+6. 如何指定只有部分IP访问, 好像不太行 https://github.com/chaifeng/ufw-docker/issues/127
+```
+sudo ufw-docker delete allow httpd_81  # 删除权限
+sudo ufw-docker allow proto tcp from 47.100.203.184 to httpd_81 
+```
+
+7. 使用ufw route
+```
+sudo ufw route allow proto tcp from 47.100.203.184 to 172.19.0.6 port 80
+```
+
+
 ## 自定义registry
 `./start_registry.sh`
 ```{literalinclude} ./start_registry.sh
