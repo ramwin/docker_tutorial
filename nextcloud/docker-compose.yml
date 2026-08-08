@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+
+  redis:
+    image: redis:alpine
+    container_name: nextcloud-redis
+    restart: always
+
+  app:
+    image: nextcloud:latest
+    container_name: nextcloud-app
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/var/www/html
+      - ./data:/var/www/html/data
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
